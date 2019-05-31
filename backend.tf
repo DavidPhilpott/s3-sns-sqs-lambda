@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = "s3-sns-sqs-lambda-test-bucket"
-    key    = "terraform_state"
-    region = "us-east-1"
+    bucket = "djphilpott-terraform-states"
+    key    = "s3-sns-sqs-lambda/terraform_state"
+    region = "eu-west-1"
   }
 }
