@@ -16,6 +16,7 @@ resource "aws_sns_topic" "s3-sns-sqs-lambda-sns-topic" {
     Project     = "s3-sns-sqs-lambda"
     Name        = "s3-sns-sqs-lambda-sns-topic"
     Environment = "Dev"
+  }
   delivery_policy = <<EOF
 {
   "http": {
