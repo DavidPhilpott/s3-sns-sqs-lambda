@@ -52,3 +52,16 @@ policy = <<POLICY
 }
 EOF
 }
+
+resource "aws_s3_bucket_notification" "s3-sns-sqs-lambda-test-bucket-notification" {
+  bucket = "${aws_s3_bucket.s3-sns-sqs-lambda-test-bucket.id}"
+
+  topic {
+    topic_arn = "${aws_sns_topic.s3-sns-sqs-lambda-sns-topic.arn}"
+
+    events = [
+      "s3:ObjectCreated:*",
+    ]
+
+  }
+}
