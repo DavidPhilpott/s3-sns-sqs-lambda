@@ -17,6 +17,21 @@ resource "aws_sns_topic" "s3-sns-sqs-lambda-sns-topic" {
     Name        = "s3-sns-sqs-lambda-sns-topic"
     Environment = "Dev"
   }
+policy = <<POLICY
+  {
+      "Version":"2012-10-17",
+      "Statement":[{
+          "Effect": "Allow",
+          "Principal": {"Service":"s3.amazonaws.com"},
+          "Action": "SNS:Publish",
+          "Resource":  "arn:aws:sns:eu-west-1:020968065558:s3-sns-sqs-lambda-sns-topic",
+          "Condition":{
+              "ArnLike":{"aws:SourceArn":"${aws_s3_bucket.s3-sns-sqs-lambda-test-bucket.arn}"}
+          }
+      }]
+  }
+  POLICY
+
   delivery_policy = <<EOF
 {
   "http": {
