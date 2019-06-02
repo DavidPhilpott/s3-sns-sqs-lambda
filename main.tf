@@ -1,20 +1,20 @@
-resource "aws_s3_bucket" "s3-sns-sqs-lambda-test-bucket" {
-  bucket = "s3-sns-sqs-lambda-test-bucket"
+resource "aws_s3_bucket" "${var.project_name}-test-bucket" {
+  bucket = "${var.project_name}-test-bucket"
   acl    = "private"
 
   tags = {
-  	Project     = "s3-sns-sqs-lambda"
-    Name        = "s3-sns-sqs-lambda-test-bucket"
+  	Project     = "${var.project_name}"
+    Name        = "${var.project_name}-test-bucket"
     Environment = "Dev"
   }
 }
 
-resource "aws_sns_topic" "s3-sns-sqs-lambda-sns-topic" {
-  name = "s3-sns-sqs-lambda-sns-topic"
+resource "aws_sns_topic" "${var.project_name}-sns-topic" {
+  name = "${var.project_name}-sns-topic"
 
   tags = {
-    Project     = "s3-sns-sqs-lambda"
-    Name        = "s3-sns-sqs-lambda-sns-topic"
+    Project     = "${var.project_name}-lambda"
+    Name        = "${var.project_name}-sns-topic"
     Environment = "Dev"
   }
 policy = <<POLICY
@@ -26,7 +26,7 @@ policy = <<POLICY
           "Action": "SNS:Publish",
           "Resource":  "arn:aws:sns:eu-west-1:020968065558:s3-sns-sqs-lambda-sns-topic",
           "Condition":{
-              "ArnLike":{"aws:SourceArn":"${aws_s3_bucket.s3-sns-sqs-lambda-test-bucket.arn}"}
+              "ArnLike":{"aws:SourceArn":"${aws_s3_bucket.${var.project_name}-test-bucket.arn}"}
           }
       }]
   }
@@ -53,11 +53,11 @@ policy = <<POLICY
 EOF
 }
 
-resource "aws_s3_bucket_notification" "s3-sns-sqs-lambda-test-bucket-notification" {
-  bucket = "${aws_s3_bucket.s3-sns-sqs-lambda-test-bucket.id}"
+resource "aws_s3_bucket_notification" "${var.project_name}-test-bucket-notification" {
+  bucket = "${aws_s3_bucket.${var.project_name}-test-bucket.id}"
 
   topic {
-    topic_arn = "${aws_sns_topic.s3-sns-sqs-lambda-sns-topic.arn}"
+    topic_arn = "${aws_sns_topic.${var.project_name}-sns-topic.arn}"
 
     events = [
       "s3:ObjectCreated:*",
