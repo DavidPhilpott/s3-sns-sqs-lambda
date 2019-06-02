@@ -1,2 +1,3 @@
 .terraform/
-secrets.tfvars
+secrets.auto.tfvars
+project-variables.auto.tfvars
