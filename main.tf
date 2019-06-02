@@ -1,20 +1,20 @@
-resource "aws_s3_bucket" "${var.project_name}-test-bucket" {
-  bucket = "${var.project_name}-test-bucket"
+resource "aws_s3_bucket" "${var.s3-bucket-name}" {
+  bucket = "${var.s3-bucket-name}"
   acl    = "private"
 
   tags = {
   	Project     = "${var.project_name}"
-    Name        = "${var.project_name}-test-bucket"
+    Name        = "${var.s3-bucket-name}"
     Environment = "Dev"
   }
 }
 
-resource "aws_sns_topic" "${var.project_name}-sns-topic" {
-  name = "${var.project_name}-sns-topic"
+resource "aws_sns_topic" "${var.sns-topic-name}" {
+  name = "${var.sns-topic-name}"
 
   tags = {
-    Project     = "${var.project_name}-lambda"
-    Name        = "${var.project_name}-sns-topic"
+    Project     = "${var.project_name}"
+    Name        = "${var.sns-topic-name}"
     Environment = "Dev"
   }
 policy = <<POLICY
@@ -26,7 +26,7 @@ policy = <<POLICY
           "Action": "SNS:Publish",
           "Resource":  "arn:aws:sns:eu-west-1:020968065558:s3-sns-sqs-lambda-sns-topic",
           "Condition":{
-              "ArnLike":{"aws:SourceArn":"${aws_s3_bucket.${var.project_name}-test-bucket.arn}"}
+              "ArnLike":{"aws:SourceArn":"${var.s3-bucket-name}.arn}"}
           }
       }]
   }
@@ -54,10 +54,10 @@ EOF
 }
 
 resource "aws_s3_bucket_notification" "${var.project_name}-test-bucket-notification" {
-  bucket = "${aws_s3_bucket.${var.project_name}-test-bucket.id}"
+  bucket = "${var.s3-bucket-name}.id}"
 
   topic {
-    topic_arn = "${aws_sns_topic.${var.project_name}-sns-topic.arn}"
+    topic_arn = "${var.sns-topic-name}.arn}"
 
     events = [
       "s3:ObjectCreated:*",
