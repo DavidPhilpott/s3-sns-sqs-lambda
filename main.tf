@@ -141,10 +141,10 @@ EOF
 ###################
 
 resource "aws_lambda_function" "lambda-endpoint" {
+  function_name = "s3-sqs-lambda-test-lambda-endpoint"
   filename      = "lambda-script.py"
-  function_name = "lambda-hander"
   role          = "${aws_iam_role.lambda-endpoint-iam-role.arn}"
-#  handler       = "exports.test"
+  handler       = "lambda-script.lambda-handler"
 
   runtime = "python3.7"
 
