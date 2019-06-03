@@ -1,22 +1,28 @@
-resource "aws_s3_bucket" "${var.s3-bucket-name}" {
-  bucket = "${var.s3-bucket-name}"
-  acl    = "private"
+#S3 Bucket 
 
-  tags = {
-  	Project     = "${var.project_name}"
-    Name        = "${var.s3-bucket-name}"
-    Environment = "Dev"
+resource "aws_s3_bucket" "test-s3-bucket" {
+  bucket = "s3-bucket"
+  acl    = "private"
+}
+
+# S3 Bucket Notification
+resource "aws_s3_bucket_notification" "test-bucket-notification" {
+  bucket = "${aws_s3_bucket.s3-bucket-name.id}"
+
+  topic {
+    topic_arn = "${aws_sns_topic.test-sns-topic.arn}"
+
+    events = [
+      "s3:ObjectCreated:*",
+    ]
+
   }
 }
 
-resource "aws_sns_topic" "${var.sns-topic-name}" {
-  name = "${var.sns-topic-name}"
+#SNS Topic
+resource "aws_sns_topic" "test-sns-topic" {
+  name = "sns-topic"
 
-  tags = {
-    Project     = "${var.project_name}"
-    Name        = "${var.sns-topic-name}"
-    Environment = "Dev"
-  }
 policy = <<POLICY
   {
       "Version":"2012-10-17",
@@ -24,9 +30,9 @@ policy = <<POLICY
           "Effect": "Allow",
           "Principal": {"Service":"s3.amazonaws.com"},
           "Action": "SNS:Publish",
-          "Resource":  "arn:aws:sns:eu-west-1:020968065558:s3-sns-sqs-lambda-sns-topic",
+          "Resource":  "arn:aws:sns:eu-west-1:020968065558:test-sns-topic",
           "Condition":{
-              "ArnLike":{"aws:SourceArn":"${var.s3-bucket-name}.arn}"}
+              "ArnLike":{"aws:SourceArn":"${aws_s3_bucket.test-s3-bucket.arn}"}
           }
       }]
   }
@@ -53,15 +59,3 @@ policy = <<POLICY
 EOF
 }
 
-resource "aws_s3_bucket_notification" "${var.project_name}-test-bucket-notification" {
-  bucket = "${var.s3-bucket-name}.id}"
-
-  topic {
-    topic_arn = "${var.sns-topic-name}.arn}"
-
-    events = [
-      "s3:ObjectCreated:*",
-    ]
-
-  }
-}

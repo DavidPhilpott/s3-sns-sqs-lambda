@@ -8,13 +8,3 @@ variable "secret_key" {
 variable "region" {
   default = "eu-west-1"
 }
-
-variable "project-name" {
-	type = "string"
-}
-
-locals {
-  common_tags = "${map(
-        "project_name", "${var.project_name}"
-    )}"
-}
