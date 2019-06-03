@@ -147,10 +147,4 @@ resource "aws_lambda_function" "lambda-endpoint" {
   handler       = "lambda-script.lambda-handler"
 
   runtime = "python3.7"
-
-  environment {
-    variables = {
-      foo = "bar"
-    }
-  }
 }
