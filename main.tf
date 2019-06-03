@@ -76,7 +76,6 @@ resource "aws_s3_bucket_notification" "bucket-notification" {
 
 resource "aws_sqs_queue" "sqs-queue" {
   name                      = "s3-sqs-lambda-test-sqs-queue"
-  }
 }
 
 
