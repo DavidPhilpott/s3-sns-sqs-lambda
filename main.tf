@@ -116,23 +116,68 @@ resource "aws_sns_topic_subscription" "sns-to-sqs-subscription" {
 #####################
 
 resource "aws_iam_role" "lambda-endpoint-iam-role" {
-  name = "s3-sqs-lambda-test-lambda-iam-role"
-
   assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Action": "sts:AssumeRole",
+      "Effect": "Allow",
       "Principal": {
         "Service": "lambda.amazonaws.com"
       },
-      "Effect": "Allow",
-      "Sid": ""
+      "Action": "sts:AssumeRole"
     }
   ]
 }
 EOF
+}
+
+resource "aws_iam_role_policy_attachment" "lambda-endpoint-iam-policy-attachment" {
+  policy_arn = "${aws_iam_policy.lambda-endpoint-iam-policy.arn}"
+  role = "${aws_iam_role.lambda-endpoint-iam-role.name}"
+}
+
+resource "aws_iam_policy" "lambda-endpoint-iam-policy" {
+  policy = "${data.aws_iam_policy_document.lambda-endpoint-iam-policy-document.json}"
+}
+
+data "aws_iam_policy_document" "lambda-endpoint-iam-policy-document" {
+  statement {
+    sid       = "AllowSQSPermissions"
+    effect    = "Allow"
+    resources = ["arn:aws:sqs:*"]
+
+    actions = [
+      "sqs:ChangeMessageVisibility",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes",
+      "sqs:ReceiveMessage",
+    ]
+  }
+
+  statement {
+    sid       = "AllowInvokingLambdas"
+    effect    = "Allow"
+    resources = ["arn:aws:lambda:eu-west-1:*:function:*"]
+    actions   = ["lambda:InvokeFunction"]
+  }
+
+  statement {
+    sid       = "AllowCreatingLogGroups"
+    effect    = "Allow"
+    resources = ["arn:aws:logs:eu-west-1:*:*"]
+    actions   = ["logs:CreateLogGroup"]
+  }
+  statement {
+    sid       = "AllowWritingLogs"
+    effect    = "Allow"
+    resources = ["arn:aws:logs:eu-west-1:*:log-group:/aws/lambda/*:*"]
+
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+    ]
+  }
 }
 
 
@@ -157,6 +202,6 @@ resource "aws_lambda_function" "lambda-endpoint" {
 resource "aws_lambda_event_source_mapping" "lambda-sqs-event-source" {
   event_source_arn = "${aws_sqs_queue.sqs-queue.arn}"
   enabled          = true
-  function_name    = "${aws_lambda_function.lambda-endpoint.name}"
+  function_name    = "${aws_lambda_function.lambda-endpoint.function_name}"
   batch_size       = 1
 }
