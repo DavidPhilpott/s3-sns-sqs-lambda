@@ -141,8 +141,8 @@ EOF
 ###################
 
 resource "aws_lambda_function" "lambda-endpoint" {
-#  filename      = "lambda_function_payload.zip"
-#  function_name = "lambda_function_name"
+  filename      = "lambda-script.py"
+  function_name = "lambda-hander"
   role          = "${aws_iam_role.lambda-endpoint-iam-role.arn}"
 #  handler       = "exports.test"
 
