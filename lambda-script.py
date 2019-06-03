@@ -1,4 +1,4 @@
-def lambda-handler(key, event):
+def handler(key, event):
 	print("Running")
-	print(key)
-	print(event)
+	print("Key: %s, Event: %s" %(key, event))
+	return
