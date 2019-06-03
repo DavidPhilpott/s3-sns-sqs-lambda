@@ -76,6 +76,27 @@ resource "aws_s3_bucket_notification" "bucket-notification" {
 
 resource "aws_sqs_queue" "sqs-queue" {
   name = "s3-sqs-lambda-test-sqs-queue"
+
+  policy = <<POLICY
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "*"
+        },
+        "Action": "SQS:SendMessage",
+        "Resource": "arn:aws:sqs:eu-west-1:020968065558:s3-sqs-lambda-test-sqs-queue",
+        "Condition": {
+          "ArnEquals": {
+            "aws:SourceArn": "arn:aws:sns:eu-west-1:020968065558:${aws_sns_topic.sns-topic.name}"
+          }
+        }
+      }
+    ]
+  }
+  POLICY
 }
 
 
