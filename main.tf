@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "test-s3-bucket" {
 
 # S3 Bucket Notification
 resource "aws_s3_bucket_notification" "test-bucket-notification" {
-  bucket = "${aws_s3_bucket.s3-bucket-name.id}"
+  bucket = "${aws_s3_bucket.test-s3-bucket.id}"
 
   topic {
     topic_arn = "${aws_sns_topic.test-sns-topic.arn}"
