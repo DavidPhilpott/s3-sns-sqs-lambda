@@ -22,7 +22,7 @@ policy = <<POLICY
           "Effect": "Allow",
           "Principal": {"Service":"s3.amazonaws.com"},
           "Action": "SNS:Publish",
-          "Resource":  "arn:aws:sns:eu-west-1:020968065558:s3-sqs-lambda-test-sns-topic",
+          "Resource":  "arn:aws:sns:${region}:020968065558:s3-sqs-lambda-test-sns-topic",
           "Condition":{
               "ArnLike":{"aws:SourceArn":"${aws_s3_bucket.bucket.arn}"}
           }
@@ -87,10 +87,10 @@ resource "aws_sqs_queue" "sqs-queue" {
           "AWS": "*"
         },
         "Action": "SQS:SendMessage",
-        "Resource": "arn:aws:sqs:eu-west-1:020968065558:s3-sqs-lambda-test-sqs-queue",
+        "Resource": "arn:aws:sqs:${region}:020968065558:s3-sqs-lambda-test-sqs-queue",
         "Condition": {
           "ArnEquals": {
-            "aws:SourceArn": "arn:aws:sns:eu-west-1:020968065558:${aws_sns_topic.sns-topic.name}"
+            "aws:SourceArn": "arn:aws:sns:${region}:020968065558:${aws_sns_topic.sns-topic.name}"
           }
         }
       }
@@ -105,9 +105,9 @@ resource "aws_sqs_queue" "sqs-queue" {
 ###########################
 
 resource "aws_sns_topic_subscription" "sns-to-sqs-subscription" {
-  topic_arn = "arn:aws:sns:eu-west-1:020968065558:${aws_sns_topic.sns-topic.name}"
+  topic_arn = "arn:aws:sns:${region}:020968065558:${aws_sns_topic.sns-topic.name}"
   protocol  = "sqs"
-  endpoint  = "arn:aws:sqs:eu-west-1:020968065558:${aws_sqs_queue.sqs-queue.name}"
+  endpoint  = "arn:aws:sqs:${region}:020968065558:${aws_sqs_queue.sqs-queue.name}"
 }
 
 
@@ -158,20 +158,20 @@ data "aws_iam_policy_document" "lambda-endpoint-iam-policy-document" {
   statement {
     sid       = "AllowInvokingLambdas"
     effect    = "Allow"
-    resources = ["arn:aws:lambda:eu-west-1:*:function:*"]
+    resources = ["arn:aws:lambda:${region}:*:function:*"]
     actions   = ["lambda:InvokeFunction"]
   }
 
   statement {
     sid       = "AllowCreatingLogGroups"
     effect    = "Allow"
-    resources = ["arn:aws:logs:eu-west-1:*:*"]
+    resources = ["arn:aws:logs:${region}:*:*"]
     actions   = ["logs:CreateLogGroup"]
   }
   statement {
     sid       = "AllowWritingLogs"
     effect    = "Allow"
-    resources = ["arn:aws:logs:eu-west-1:*:log-group:/aws/lambda/*:*"]
+    resources = ["arn:aws:logs:${region}:*:log-group:/aws/lambda/*:*"]
 
     actions = [
       "logs:CreateLogStream",
