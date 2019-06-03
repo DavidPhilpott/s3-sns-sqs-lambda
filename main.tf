@@ -1,13 +1,13 @@
 #S3 Bucket 
 
-resource "aws_s3_bucket" "s3-sqs-lambda-test-s3-bucket" {
+resource "aws_s3_bucket" "bucket" {
   bucket = "s3-sqs-lambda-test-s3-bucket"
   acl    = "private"
 }
 
 
 #SNS Topic
-resource "aws_sns_topic" "s3-sqs-lambda-test-sns-topic" {
+resource "aws_sns_topic" "sns-topic" {
   name = "s3-sqs-lambda-test-sns-topic"
 
 policy = <<POLICY
@@ -17,9 +17,9 @@ policy = <<POLICY
           "Effect": "Allow",
           "Principal": {"Service":"s3.amazonaws.com"},
           "Action": "SNS:Publish",
-          "Resource":  "arn:aws:sns:eu-west-1:020968065558:s3-sqs-lambda-test-sns-topic",
+          "Resource":  "arn:aws:sns:eu-west-1:020968065558:${aws_sns_topic.sns-topic.name}",
           "Condition":{
-              "ArnLike":{"aws:SourceArn":"${aws_s3_bucket.s3-sqs-lambda-test-s3-bucket.arn}"}
+              "ArnLike":{"aws:SourceArn":"${aws_s3_bucket.bucket.arn}"}
           }
       }]
   }
@@ -47,11 +47,11 @@ EOF
 }
 
 #S3 Bucket Notification to SNS
-resource "aws_s3_bucket_notification" "s3-sqs-lambda-test-bucket-notification" {
-  bucket = "${aws_s3_bucket.s3-sqs-lambda-test-s3-bucket.id}"
+resource "aws_s3_bucket_notification" "bucket-notification" {
+  bucket = "${aws_s3_bucket.bucket.id}"
 
   topic {
-    topic_arn = "${aws_sns_topic.s3-sqs-lambda-test-sns-topic.arn}"
+    topic_arn = "${aws_sns_topic.sns-topic.arn}"
 
     events = [
       "s3:ObjectCreated:*",
