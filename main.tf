@@ -22,7 +22,7 @@ policy = <<POLICY
           "Effect": "Allow",
           "Principal": {"Service":"s3.amazonaws.com"},
           "Action": "SNS:Publish",
-          "Resource":  "arn:aws:sns:${var.region}:020968065558:s3-sqs-lambda-test-sns-topic",
+          "Resource":  "arn:aws:sns:${var.region}:${var.account}:s3-sqs-lambda-test-sns-topic",
           "Condition":{
               "ArnLike":{"aws:SourceArn":"${aws_s3_bucket.bucket.arn}"}
           }
@@ -87,10 +87,10 @@ resource "aws_sqs_queue" "sqs-queue" {
           "AWS": "*"
         },
         "Action": "SQS:SendMessage",
-        "Resource": "arn:aws:sqs:${var.region}:020968065558:s3-sqs-lambda-test-sqs-queue",
+        "Resource": "arn:aws:sqs:${var.region}:${var.account}:s3-sqs-lambda-test-sqs-queue",
         "Condition": {
           "ArnEquals": {
-            "aws:SourceArn": "arn:aws:sns:${var.region}:020968065558:${aws_sns_topic.sns-topic.name}"
+            "aws:SourceArn": "arn:aws:sns:${var.region}:${var.account}:${aws_sns_topic.sns-topic.name}"
           }
         }
       }
@@ -105,9 +105,9 @@ resource "aws_sqs_queue" "sqs-queue" {
 ###########################
 
 resource "aws_sns_topic_subscription" "sns-to-sqs-subscription" {
-  topic_arn = "arn:aws:sns:${var.region}:020968065558:${aws_sns_topic.sns-topic.name}"
+  topic_arn = "arn:aws:sns:${var.region}:${var.account}:${aws_sns_topic.sns-topic.name}"
   protocol  = "sqs"
-  endpoint  = "arn:aws:sqs:${var.region}:020968065558:${aws_sqs_queue.sqs-queue.name}"
+  endpoint  = "arn:aws:sqs:${var.region}:${var.account}:${aws_sqs_queue.sqs-queue.name}"
 }
 
 
