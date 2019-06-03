@@ -140,7 +140,7 @@ EOF
 # Lambda function #
 ###################
 
-resource "aws_lambda_function" "test_lambda" {
+resource "aws_lambda_function" "lambda-endpoint" {
 #  filename      = "lambda_function_payload.zip"
 #  function_name = "lambda_function_name"
   role          = "${aws_iam_role.lambda-endpoint-iam-role.arn}"
