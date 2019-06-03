@@ -75,10 +75,16 @@ resource "aws_s3_bucket_notification" "bucket-notification" {
 #############
 
 resource "aws_sqs_queue" "sqs-queue" {
-  name                      = "s3-sqs-lambda-test-sqs-queue"
+  name = "s3-sqs-lambda-test-sqs-queue"
 }
 
 
 ###########################
 # SNS to SQS Subscription #
 ###########################
+
+resource "aws_sns_topic_subscription" "sns-to-sqs-subscription" {
+  topic_arn = "arn:aws:sns:eu-west-1:020968065558:${aws_sns_topic.sns-topic.name}"
+  protocol  = "sqs"
+  endpoint  = "arn:aws:sqs:eu-west-1:020968065558:${aws_sqs_queue.sqs-queue.name}"
+}
