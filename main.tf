@@ -189,7 +189,7 @@ resource "aws_lambda_function" "lambda-endpoint" {
   function_name = "s3-sqs-lambda-test-lambda-endpoint"
   filename      = "lambda-script.zip"
   role          = "${aws_iam_role.lambda-endpoint-iam-role.arn}"
-  handler       = "lambda-script.lambda-handler"
+  handler       = "lambda-script.handler"
 
   runtime = "python3.7"
 }
