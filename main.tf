@@ -1,27 +1,14 @@
 #S3 Bucket 
 
 resource "aws_s3_bucket" "s3-sqs-lambda-test-s3-bucket" {
-  bucket = "s3-bucket"
+  bucket = "s3-sqs-lambda-test-s3-bucket"
   acl    = "private"
 }
 
-# S3 Bucket Notification
-resource "aws_s3_bucket_notification" "s3-sqs-lambda-test-bucket-notification" {
-  bucket = "${aws_s3_bucket.s3-sqs-lambda-test-s3-bucket.id}"
-
-  topic {
-    topic_arn = "${aws_sns_topic.s3-sqs-lambda-test-sns-topic.arn}"
-
-    events = [
-      "s3:ObjectCreated:*",
-    ]
-
-  }
-}
 
 #SNS Topic
 resource "aws_sns_topic" "s3-sqs-lambda-test-sns-topic" {
-  name = "sns-topic"
+  name = "s3-sqs-lambda-test-sns-topic"
 
 policy = <<POLICY
   {
@@ -59,3 +46,16 @@ policy = <<POLICY
 EOF
 }
 
+#S3 Bucket Notification to SNS
+resource "aws_s3_bucket_notification" "s3-sqs-lambda-test-bucket-notification" {
+  bucket = "${aws_s3_bucket.s3-sqs-lambda-test-s3-bucket.id}"
+
+  topic {
+    topic_arn = "${aws_sns_topic.s3-sqs-lambda-test-sns-topic.arn}"
+
+    events = [
+      "s3:ObjectCreated:*",
+    ]
+
+  }
+}
