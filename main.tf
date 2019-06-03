@@ -148,3 +148,15 @@ resource "aws_lambda_function" "lambda-endpoint" {
 
   runtime = "python3.7"
 }
+
+
+######################
+# Lambda SQS Trigger #
+######################
+
+resource "aws_lambda_event_source_mapping" "lambda-sqs-event-source" {
+  event_source_arn = "${aws_sqs_queue.sqs-queue.arn}"
+  enabled          = true
+  function_name    = "${aws_lambda_function.lambda-endpoint.arn}"
+  batch_size       = 1
+}
