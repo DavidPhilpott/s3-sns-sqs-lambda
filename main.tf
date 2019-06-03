@@ -109,3 +109,28 @@ resource "aws_sns_topic_subscription" "sns-to-sqs-subscription" {
   protocol  = "sqs"
   endpoint  = "arn:aws:sqs:eu-west-1:020968065558:${aws_sqs_queue.sqs-queue.name}"
 }
+
+
+#####################
+# Lambda IAM Policy #
+#####################
+
+resource "aws_iam_role" "lambda-endpoint-iam-role" {
+  name = "s3-sqs-lambda-test-lambda-iam-role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
